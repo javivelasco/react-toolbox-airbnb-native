@@ -4431,9 +4431,9 @@ react-timer-mixin@^0.13.2:
   version "0.13.3"
   resolved "https://registry.yarnpkg.com/react-timer-mixin/-/react-timer-mixin-0.13.3.tgz#0da8b9f807ec07dc3e854d082c737c65605b3d22"
 
-react-toolbox-core@0.0.0-alpha.8:
-  version "0.0.0-alpha.8"
-  resolved "https://registry.yarnpkg.com/react-toolbox-core/-/react-toolbox-core-0.0.0-alpha.8.tgz#7695b96a19318301e545bdec4598a4b1ccdc1fef"
+react-toolbox-core@0.0.0-alpha.9:
+  version "0.0.0-alpha.9"
+  resolved "https://registry.yarnpkg.com/react-toolbox-core/-/react-toolbox-core-0.0.0-alpha.9.tgz#e12d4b5a4a608803f87f753268e81f57481f804b"
   dependencies:
     date-fns "^1.28.4"
     inline-style-prefixer "^3.0.3"
