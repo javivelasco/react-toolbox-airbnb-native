@@ -1,32 +1,20 @@
 import React from 'react';
 import styled from 'styled-components/native';
 import DateView from './DateView';
+import Separator from './Separator';
 
 const Heading = ({ from, to }) => (
   <HeadingLayout>
     <DateView start date={from} />
-    <DateSeparator>
-      <DateSeparatorInner />
-    </DateSeparator>
+    <Separator color="#348c91" size={40} />
     <DateView date={to} />
   </HeadingLayout>
 );
 
 const HeadingLayout = styled.View`
+  align-items: center;
   flex-direction: row;
-  padding: 20;
-`
-
-const DateSeparator = styled.View`
-  flex-direction: column;
-`
-
-const DateSeparatorInner = styled.View`
-  border-top-color: #fff;
-  border-top-width: 0.5;
-  flex: 1;
-  transform: rotate(135deg) translateX(-18) translateY(-20);
-  width: 70;
+  padding: 15 20;
 `;
 
 export default Heading;

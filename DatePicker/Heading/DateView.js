@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components/native';
-import getFullDayOfWeek from 'react-toolbox-core/lib/components/DatePicker/dateLocale/getFullDayOfWeek';
-import getShortMonth from 'react-toolbox-core/lib/components/DatePicker/dateLocale/getShortMonth';
+import getFullDayOfWeek from 'react-toolbox-core/lib/locale/getFullDayOfWeek';
+import getShortMonth from 'react-toolbox-core/lib/locale/getShortMonth';
 
 const DateView = ({ align, date, start }) => (
   <DateViewWrapper>
@@ -22,13 +22,10 @@ const DateViewWrapper = styled.View`
 const DateViewNode = styled.Text`
   color: white;
   flex-grow: 1;
-  font-size: 22;
+  font-size: 20;
   font-weight: 300;
-  line-height: 35;
-  text-align: ${props => (props.start
-    ? 'left'
-    : 'right'
-  )};
+  line-height: 36;
+  text-align: ${props => props.start ? 'left' : 'right'};
 `;
 
 function getTopLabel(date, start) {

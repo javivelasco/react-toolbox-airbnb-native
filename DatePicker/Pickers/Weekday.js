@@ -9,9 +9,9 @@ const Weekday = ({ children, ...rest }) => (
 
 const WeekdayNode = styled.Text`
   color: #fff;
-  height: 24;
-  flex: 7;
   flex-direction: row;
+  flex: 7;
+  line-height: 28;
   text-align: center;
 `;
 

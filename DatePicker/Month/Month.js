@@ -1,96 +1,132 @@
-import { range } from 'ramda';
-import React, { Component, PropTypes } from 'react';
-import styled from 'styled-components/native';
-import { FlatList, Dimensions } from 'react-native';
 import monthFactory from 'react-toolbox-core/lib/components/DatePicker/Month';
-import dateShape from 'react-toolbox-core/lib/components/DatePicker/dateShape';
+import React, { Component } from 'react';
+import styled from 'styled-components/native';
+import { FlatList } from 'react-native';
+import { addMonths } from 'date-fns';
+import { range } from 'ramda';
 import Day from './Day';
 
-const Month = monthFactory({
-  passthrough: (props, comp) => {
-    switch (comp) {
-      case 'Day':
-        return {
-          onPress: (...args) => requestAnimationFrame(() => {
-            props.onDayClick(...args);
-          }),
-        };
-      default:
-        return {};
+/**
+ * Instead of exposing a Month component that receives a viewDate and displays a single month,
+ * We building a wrapper component that renders a list of months from the given view date and
+ * exposing it instead of a simple month. Also this component has to be measured and virtually
+ * rendered for performance reasons.
+ */
+class MonthsList extends Component {
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.viewDate.getTime() !== this.props.viewDate.getTime()) {
+      this.setState({ data: getData(nextProps.viewDate) });
     }
-  },
-  Weekday: Empty,
-  WeekdaysWrapper: Empty,
-  MonthWrapper: styled.View`
-    flex-direction: column;
-    align-self: center;
-    width: ${Math.floor(Dimensions.get('window').width / 7) * 7};
-  `,
-  MonthTitle: styled.Text`
-    align-items: center;
-    justify-content: center;
-    font-size: 18;
-    color: white;
-    margin: 10;
-  `,
-  DaysWrapper: styled.View`
-    flex-direction: column;
-  `,
-  DaysWeek: styled.View`
-    flex-grow: 1;
-    margin: 3 0;
-    flex-direction: row;
-    align-items: center;
-  `,
-  Day,
-});
-
-function Empty() {
-  return null;
-}
-
-class RenderMonth extends Component {
-  static propTypes = {
-    highlighted: dateShape,
-    onDayClick: PropTypes.func,
-    onDayMouseEnter: PropTypes.func,
-    selected: dateShape,
-    viewDate: PropTypes.instanceOf(Date),
-  };
-
-  getData = (props) => {
-    const { viewDate } = props;
-    const viewFullYear = viewDate.getFullYear();
-    const viewMonth = viewDate.getMonth();
-
-    return range(0, 12).map(month => ({
-      key: month,
-      month: new Date(viewFullYear, viewMonth + month, 1),
-    }));
   }
 
-  renderItem = ({ item }) => {
+  state = {
+    data: getData(this.props.viewDate),
+    width: 0,
+  };
+
+  keyExtractor = (item, index) => (
+    item.getTime().toString()
+  );
+
+  handleLayoutReady = (event) => {
+    this.setState({
+      width: event.nativeEvent.layout.width,
+    });
+  };
+
+  renderMonth = ({ item }) => {
     const { highlighted, onDayClick, selected, ...rest } = this.props;
+    const { width } = this.state;
+    
     return (
       <Month
         {...rest}
         highlighted={highlighted}
         onDayClick={onDayClick}
         selected={selected}
-        viewDate={item.month}
+        viewDate={item}
+        width={width}
       />
     );
-  }
+  };
 
   render() {
+    const { data, width } = this.state;
     return (
-      <FlatList
-        data={this.getData(this.props)}
-        renderItem={this.renderItem}
-        style={{ flex: 1 }}
-      />
+      <ListWrapper onLayout={this.handleLayoutReady}>
+        {width !== 0 && <FlatList
+          data={data}
+          initialNumToRender={4}
+          keyExtractor={this.keyExtractor}
+          maxToRenderPerBatch={6}
+          onViewableItemsChanged={this.viewableChanged}
+          renderItem={this.renderMonth}
+          showsVerticalScrollIndicator={false}
+          style={{ flex: 1 }}
+          windowSize={4}
+        />}
+      </ListWrapper>
     );
   }
 }
 
-export default RenderMonth;
+const ListWrapper = styled.View`
+  align-items: center;
+  flex: 1;
+`;
+
+/**
+ * We use the RT factory component to generate a Month with the appropriated
+ * styles. We are passing through the monthWidth because Days need the size to
+ * paint a border and also onPress should be bound to onDayClick original handler.
+ */
+const Month = monthFactory({
+  passthrough: (props, nodeName, instance) => {
+    if (nodeName === 'Day') {
+      return {
+        monthWidth: props.width,
+        onPress: function handleOnDayPress(...args) {
+          props.onDayClick(...args)
+        }
+      }
+    }
+    return {};
+  },
+  Weekday: Empty,
+  WeekdaysWrapper: Empty,
+  MonthWrapper: styled.View`
+    align-self: center;
+    flex-direction: column;
+    width: 100%;
+  `,
+  MonthTitle: styled.Text`
+    align-items: center;
+    color: white;
+    font-size: 18;
+    justify-content: center;
+    line-height: 46;
+    margin-left: 15;
+  `,
+  DaysWrapper: styled.View`
+    flex-direction: column;
+  `,
+  DaysWeek: styled.View`
+    align-items: center;
+    flex-direction: row;
+    flex-grow: 1;
+    margin: 2 0;
+  `,
+  Day,
+});
+
+function getData(viewDate) {
+  return range(0, 24).map(index => (
+    addMonths(viewDate, index)
+  ));
+}
+
+function Empty() {
+  return null;
+}
+
+export default MonthsList;

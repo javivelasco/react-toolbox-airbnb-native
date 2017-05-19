@@ -1,20 +1,29 @@
-import React from 'react';
+import getFullDayOfWeek from 'react-toolbox-core/lib/locale/getFullDayOfWeek';
+import React, { Component } from 'react';
 import styled from 'styled-components/native';
-import getFullDayOfWeek from 'react-toolbox-core/lib/components/DatePicker/dateLocale/getFullDayOfWeek';
 import Weekday from './Weekday';
 
-const Weekdays = ({ locale, sundayFirstDayOfWeek }) => (
-  <WeekdaysWrapper>
-    {getSortedDaysIdx(sundayFirstDayOfWeek).map(weekDay => (
-      <Weekday
-        key={getFullDayOfWeek(weekDay, locale)}
-        weekDay={weekDay}
-      >
-        {getFullDayOfWeek(weekDay, locale)}
+class Weekdays extends Component {
+  renderDay = weekDay => {
+    const { locale } = this.props;
+    const fullDay = getFullDayOfWeek(weekDay, locale);
+    return (
+      <Weekday key={fullDay} weekDay={weekDay}>
+        {fullDay}
       </Weekday>
-    ))}
-  </WeekdaysWrapper>
-);
+    );
+  };
+
+  render() {
+    const { sundayFirstDayOfWeek } = this.props;
+    const daysIdxs = getSortedDaysIdx(sundayFirstDayOfWeek);
+    return (
+      <WeekdaysWrapper>
+        {daysIdxs.map(this.renderDay)}
+      </WeekdaysWrapper>    
+    );
+  }
+}
 
 const WeekdaysWrapper = styled.View`
   align-items: center;
@@ -22,6 +31,7 @@ const WeekdaysWrapper = styled.View`
   border-bottom-width: 1;
   flex-direction: row;
   justify-content: center;
+  margin-top: 5;
 `;
 
 function getSortedDaysIdx(sundayFirstDayOfWeek) {
