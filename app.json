@@ -1,5 +1,10 @@
 {
   "expo": {
-    "sdkVersion": "16.0.0"
+    "name": "React Toolbox Airbnb DatePicker",
+    "description": "A demo showing an implementation of Airbnbs DatePicker from their native iOS app using React Toolbox Core DatePicker agnostic component",
+    "slug": "react-toolbox-airbnb-native",
+    "sdkVersion": "16.0.0",
+    "privacy": "unlisted",
+    "orientation": "portrait"
   }
 }
